@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .todo-container {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .todo-container h1 {
+      text-align: center;
+    }
+    .todo-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    .todo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+    .todo-item:last-child {
+      border-bottom: none;
+    }
+    .todo-item input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    .delete-btn {
+      background-color: #ff6347;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-container">
+    <h1>Todo List</h1>
+    <input type="text" id="todo-input" class="todo-input" placeholder="Add a new task...">
+    <div id="todo-list"></div>
+  </div>
+
+  <script>
+    // Retrieve tasks from local storage or initialize an empty array
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    // Function to render tasks
+    function renderTasks() {
+      const todoList = document.getElementById('todo-list');
+      todoList.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const todoItem = document.createElement('div');
+        todoItem.className = 'todo-item';
+        todoItem.innerHTML = `
+          <input type="checkbox" id="task-${index}" ${task.completed ? 'checked' : ''}>
+          <label for="task-${index}">${task.text}</label>
+          <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+        `;
+        todoList.appendChild(todoItem);
+      });
+    }
+
+    // Function to add a new task
+    function addTask() {
+      const input = document.getElementById('todo-input');
+      const text = input.value.trim();
+
+      if (text !== '') {
+        const newTask = { text: text, completed: false };
+        tasks.push(newTask);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        renderTasks();
+        input.value = '';
+      }
+    }
+
+    // Function to delete a task
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    // Function to toggle task completion
+    function toggleTaskCompletion(index) {
+      tasks[index].completed = !tasks[index].completed;
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    // Event listener for adding tasks
+    document.getElementById('todo-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        addTask();
+      }
+    });
+
+    // Initial rendering of tasks
+    renderTasks();
+  </script>
+</body>
+</html>
